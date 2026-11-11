@@ -27,15 +27,7 @@ public class Board {
         return cells[row][col];
     }
 
-    /**
-     * Returns the cells in the given row, left to right. Empty cells are null.
-     * Returns a copy, so changing the array does not change the board.
-     */
-    public Player[] getRow(int row) {
-        return cells[row].clone();
-    }
-
-    public int getSize() {
+    public static int getSize() {
         return SIZE;
     }
 }

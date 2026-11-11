@@ -1,0 +1,626 @@
+ ▐▛███▛█   Claude Code v2.1.322
+▝▜██████▀  Opus 5.5 · Claude Pro
+ ▝▝   ▝▝   ~/src/tic-tac-toe
+
+  Fable 5.2 is here for your longest and toughest coding tasks, and is included in your plan until November 16. It draws down usage faster than Opus 5.5. Switch with /model.
+
+❯ add a getRow helper to Board                                                  
+
+  Searched for 2 patterns, read 1 file (ctrl+o to expand)
+
+⏺ Update(src/main/java/com/models/Board.java)
+  ⎿  Added 8 lines
+      27          return cells[row][col];
+      28      }
+      29  
+      30 +    /**                                                        
+      31 +     * Returns the cells in the given row, left to right. Empty
+         + cells are null.                                               
+      32 +     * The returned list is a read-only copy; changing the boar
+         +d later does not affect it.                                    
+      33 +     */                                                        
+      34 +    public List<Player> getRow(int row) {                      
+      35 +        return Collections.unmodifiableList(Arrays.asList(cells
+         +[row].clone()));                                               
+      36 +    }                                                          
+      37 +                                                               
+      38      public int getSize() {
+      39          return SIZE;
+      40      }
+
+⏺ Update(src/main/java/com/models/Board.java)
+  ⎿  Added 4 lines
+      1  package com.models;
+      2  
+      3 +import java.util.Arrays;                                        
+      4 +import java.util.Collections;                                   
+      5 +import java.util.List;                                          
+      6 +                                                                
+      7  public class Board {
+      8      private static final int SIZE = 4;
+      9  
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+⏺ Maven skipped compilation because it thought the classes were up to date, so
+  I'm forcing a clean build to actually check the change.
+
+  Ran 1 shell command (ctrl+o to expand)
+  ⎿  Interrupted · What should Claude do instead?
+
+❯ I've mostly fleshed out checkWinner. rowWinner is complete. add the Optional  
+  variable assignemnet, check, and return for the other win conditions          
+
+⏺ Update(src/main/java/com/TicTacToe.java)
+  ⎿  Added 4 lines, removed 1 line
+      20                  board.getCell(1, i),
+      21                  board.getCell(2, i),
+      22                  board.getCell(3, i));
+      23 -            getSetWinner(column);                              
+      23 +            Optional<Player> columnWinner = getSetWinner(column
+         +);                                                             
+      24 +            if (columnWinner.isPresent()) {                    
+      25 +                return columnWinner;                           
+      26 +            }                                                  
+      27          }
+      28  
+      29          List<Player> downDiagonal = List.of(
+
+⏺ Update(src/main/java/com/TicTacToe.java)
+  ⎿  Added 5 lines, removed 1 line
+      31              board.getCell(1, 1),
+      32              board.getCell(2, 2),
+      33              board.getCell(3, 3));
+      34 -        getSetWinner(downDiagonal);                            
+      34 +        Optional<Player> downDiagonalWinner = getSetWinner(down
+         +Diagonal);                                                     
+      35 +        if (downDiagonalWinner.isPresent()) {                  
+      36 +            return downDiagonalWinner;                         
+      37 +        }                                                      
+      38 +                                                               
+      39          List<Player> upDiagonal = List.of(
+      40              board.getCell(0, 3),
+      41              board.getCell(1, 2),
+
+⏺ Update(src/main/java/com/TicTacToe.java)
+  ⎿  Added 4 lines, removed 1 line
+      41              board.getCell(1, 2),
+      42              board.getCell(2, 1),
+      43              board.getCell(3, 0));
+      44 -        getSetWinner(upDiagonal);                              
+      44 +        Optional<Player> upDiagonalWinner = getSetWinner(upDiag
+         +onal);                                                         
+      45 +        if (upDiagonalWinner.isPresent()) {                    
+      46 +            return upDiagonalWinner;                           
+      47 +        }                                                      
+      48  
+      49          List<Player> fourCorners = List.of(
+      50              board.getCell(0, 0),
+
+⏺ Update(src/main/java/com/TicTacToe.java)
+  ⎿  Added 4 lines, removed 1 line
+      51              board.getCell(0, 3),
+      52              board.getCell(3, 0),
+      53              board.getCell(3, 3));
+      54 -        getSetWinner(fourCorners);                             
+      54 +        Optional<Player> fourCornersWinner = getSetWinner(fourC
+         +orners);                                                       
+      55 +        if (fourCornersWinner.isPresent()) {                   
+      56 +            return fourCornersWinner;                          
+      57 +        }                                                      
+      58  
+      59          for (int i = 0; i < board.getSize() - 1; i++) {
+      60              for (int j = 0; j < board.getSize() - 1; j++) {
+
+⏺ Update(src/main/java/com/TicTacToe.java)
+  ⎿  Added 6 lines, removed 1 line
+      63                      board.getCell(i, j + 1),
+      64                      board.getCell(i + 1, j),
+      65                      board.getCell(i + 1, j + 1));
+      66 -                getSetWinner(box);                             
+      66 +                Optional<Player> boxWinner = getSetWinner(box);
+      67 +                if (boxWinner.isPresent()) {                   
+      68 +                    return boxWinner;                          
+      69 +                }                                              
+      70              }
+      71          }
+      72 +                                                               
+      73 +        return Optional.empty();                               
+      74      }
+      75  
+      76      public static boolean anyMovesLeft(Board board) {
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ I added the assignment, check and return to the column, both diagonals, four
+  corners and box checks in checkWinner, matching your rowWinner pattern. I also
+  added a final return Optional.empty(), which the method needs to compile.
+
+  The project now compiles, but the tests fail: 24 errors (all the ones visible
+  are NullPointerExceptions) and 3 failures. The errors come from your existing
+  code, not the new lines: List.of(...) rejects null, and empty cells are null.
+  So the column, diagonal, corner and box lists crash as soon as the board has
+  an empty square. (getRow from earlier is fine, because it builds its list with
+  Arrays.asList, which accepts null.)
+
+  The fix is to swap the four List.of( calls for Arrays.asList( and add import 
+  java.util.Arrays;. I haven't looked at the 3 failures yet; they might go away
+  once nothing crashes. Want me to make the swap and rerun the tests?
+
+✻ Churned for 16s · done 11:40 AM
+
+❯ should I do that, or just make the List code in TicTacToe arrays?             
+
+⏺ I'd use Arrays.asList. It's the smallest change: replace List.of( with
+  Arrays.asList( in four places and add one import. Nothing else changes, and
+  everything stays a List, which matches what getRow returns and what
+  getSetWinner takes.
+
+  Switching to arrays affects more code. getSetWinner would need to take
+  Player[] and use Arrays.stream(set). Then getRow either returns an array too,
+  or you convert its result at the call site. That's more change for the same
+  behaviour.
+
+  If you like the array idea because it's less wordy, there's a tidy middle
+  option: make getSetWinner take varargs, getSetWinner(Player... set). Then you
+  can drop the list variables and write:
+
+  getSetWinner(board.getCell(0, i), board.getCell(1, i), board.getCell(2, i),
+  board.getCell(3, i))
+
+  The catch is that the row check would then need getRow to return Player[].
+  It's nice, but it's a bigger refactor. To get the tests running again,
+  Arrays.asList is the simpler fix.
+
+✻ Sautéed for 6s · done 11:42 AM
+
+❯ I prefer arrays if that matches the board input best (and most efficiently),  
+  and accept a large refactor                                                   
+
+  Searched for 1 pattern, ran 1 shell command (ctrl+o to expand)
+
+⏺ All 27 checkWinner tests fail, including the empty board, which suggests
+  something in the tests themselves. Checking the failure messages.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ I finished the switch to arrays. The project compiles, the
+  NullPointerExceptions are gone, and the anyMovesLeft and isGameOver tests
+  pass. The 27 checkWinner tests all fail, but because the tests expect a
+  different return type, not because the win logic is wrong:
+
+  expected: <X> but was: <Optional[X]>
+
+  checkWinner returns Optional<Player>, but the tests in
+  src/test/java/com/TicTacToeTest.java expect a plain Player or null. They use
+  assertEquals(p, …) at lines 71–119 and assertNull(…) at lines 124–135. The
+  method found the right winner in every case. Even the empty board "fails" only
+  because it returns Optional.empty() instead of null.
+
+  What changed:
+  - Board.getRow now returns Player[], a copy of the row, so changing it doesn't
+    change the board.
+  - TicTacToe.checkWinner: each line to check (column, diagonals, corners, box)
+    is now a Player[] filled straight from getCell, and List is gone from the
+    file.
+  - getSetWinner(Player[] set) goes through the array once instead of streaming
+    it twice. It returns empty at once if the first cell is empty or as soon as
+    a cell doesn't match.
+
+  To fix the tests, either:
+  - Update the tests to assertEquals(Optional.of(p), …) and
+    assertEquals(Optional.empty(), …). I'd do this: Optional is what your design
+    returns, and isGameOver already relies on it.
+  - Change checkWinner to return Player (or null) to match the tests.
+
+  Should I update the tests?
+
+✻ Crunched for 22s · done 11:43 AM
+
+❯ udpate the tests to Optional                                                  
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+⏺ I updated the checkWinner tests to expect Optional, and all 33 tests now pass.
+
+  In src/test/java/com/TicTacToeTest.java:
+  - Winning boards (lines 71–119) now expect Optional.of(...) with the winner.
+  - No-winner boards (lines 124–135), meaning the empty board, the full board
+    with no win, and the near misses, now use assertEquals(Optional.empty(), …)
+    instead of assertNull.
+  - Imports: added java.util.Optional and removed the unused assertNull.
+
+✻ Cogitated for 13s · done 11:44 AM
+
+※ recap: You're finishing checkWinner for your 4x4 tic-tac-toe game: it now uses arrays instead of lists, and all 33 tests pass with the Optional return type. Nothing is waiting on me, so you're free to move to the next feature. (disable recaps in /config)
+❯ I hardcoded the indicies for column and for diagonal (for checkWinner). Can   
+  you update them to use for loop based on board.getSize?                       
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+⏺ In checkWinner, the column and both diagonals are now built with loops over
+  board.getSize() instead of hardcoded 0–3, and all 33 tests still pass.
+
+  - Column: each pass of the outer loop fills a Player[] of length
+    board.getSize() from board.getCell(row, i).
+  - Diagonals: one loop fills both arrays. The down diagonal uses (i, i) and the
+    up diagonal uses (i, size - 1 - i). Each is still checked separately, down
+    first and then up.
+
+  With your four-corners change already in place, nothing in checkWinner assumes
+  a 4×4 board anymore. The box check is meant to be 2×2 at any board size.
+
+✻ Baked for 14s · done 12:03 PM
+
+❯  it feels inefficient to iterate over the board to build a player list, then  
+  the players to get a winner, but I like the readability and shared logic. Do  
+  I have alternative options?                                                   
+
+⏺ Yes, there are a few. First, though: at this size it doesn't matter. A 4×4
+  board has 20 possible wins (4 rows, 4 columns, 2 diagonals, 4 corners, 9
+  boxes) of 4 cells each, so the worst case is about 80 cell reads and 20 small
+  arrays. The JVM probably optimises the short-lived arrays away entirely. The
+  double pass costs almost nothing.
+
+  If you want a single pass anyway, here are the options from least to most
+  change:
+
+  1. Pass a cell lookup instead of an array. getSetWinner takes a length and a
+  function that fetches each cell. It reads cells one at a time and stops at the
+  first mismatch, so no array is built:
+
+  getSetWinner(size, k -> board.getCell(k, i));                 // column i
+  getSetWinner(size, k -> board.getCell(k, k));                 // down diagonal
+  getSetWinner(size, k -> board.getCell(k, size - 1 - k));      // up diagonal
+
+  It's one pass with early exit and keeps the shared logic. The checks get
+  shorter than the current loops, but the lambdas are a bit less obvious to
+  read.
+
+  2. Win conditions as data (my pick). Build a list of every winning line once,
+  as cell coordinates, in a static field. checkWinner then becomes a single
+  loop: for each line, read its cells off the board and stop at the first
+  mismatch. All the "what counts as a win" logic sits in one place, the checking
+  runs in one pass, and nothing is rebuilt per call. Adding a new kind of win
+  means adding coordinates, not a new block of code. The one wrinkle is that the
+  board size has to be known when the list is built, which works because SIZE
+  is a constant.
+
+  3. Bitboards. Store each player's cells as one 16-bit number, with one bit per
+  cell, and keep each winning line as a precomputed bit pattern. Checking a
+  line is then a single operation: (xBits & line) == line. It's by far the
+  fastest, but it means rewriting Board, and the code becomes much harder to
+  read. It's only worth it for something like an AI that checks millions of
+  boards.
+
+  4. Only check lines through the last move. After a move, only the lines
+  through that cell can have become a win. This is the biggest saving in
+  practice, but it changes the API: checkWinner would need the last move, not
+  just the board.
+
+  Option 2 fits what you said you value: it's readable, keeps the logic shared,
+  and avoids the double pass. Want me to implement it?
+
+✻ Crunched for 13s · done 12:07 PM
+
+※ recap: You're building a 4×4 tic-tac-toe winner check: checkWinner is finished and all 33 tests pass. Next, decide whether I should implement my suggested speed-up, which lists every winning line once and checks each in one pass. (disable recaps in /config)
+
+❯ /export                                                                       
+  ⎿  Conversation exported to: /Users/sageleone/src/tic-tac-toe/session2-impleme
+     ntation-and-test-updates-and-perf.txt
+
+※ recap: You're getting checkWinner working for the 4×4 tic-tac-toe board; it now handles any board size and all 33 tests pass. Next, tell me whether to implement the faster version that lists every winning line once up front. (disable recaps in /config)
+
+❯ yeah, let's do it                                                             
+
+  Read 2 files (ctrl+o to expand)
+
+⏺ The win lines are built once, when the class loads, so that code needs the
+  board size without a Board instance. I'll make Board.SIZE public for that.
+
+⏺ Update(src/main/java/com/models/Board.java)
+  ⎿  Added 1 line, removed 1 line
+      1  package com.models;
+      2  
+      3  public class Board {
+      4 -    private static final int SIZE = 4;                          
+      4 +    public static final int SIZE = 4;                           
+      5  
+      6      private Player[][] cells;
+      7  
+
+⏺ Write(src/main/java/com/TicTacToe.java)
+  ⎿  Added 56 lines, removed 59 lines
+      1  package com;
+      2  
+      3 +import java.util.ArrayList;                                     
+      4 +import java.util.List;                                          
+      5  import java.util.Optional;
+      6  
+      7  import com.models.Board;
+     ...
+       9  
+      10  public class TicTacToe {
+      11  
+      12 +    /**                                                        
+      13 +     * Every winning line on the board, as a list of {row, col}
+         + cells.                                                        
+      14 +     * Built once; checkWinner reads the board through these co
+         +ordinates.                                                     
+      15 +     */                                                        
+      16 +    private static final int[][][] WIN_LINES = buildWinLines(Bo
+         +ard.SIZE);                                                     
+      17 +                                                               
+      18      public static Optional<Player> checkWinner(Board board) {
+      11 -        for (int i = 0; i < board.getSize(); i++) {            
+      12 -            Optional<Player> rowWinner = getSetWinner(board.get
+         -Row(i));                                                       
+      13 -            if (rowWinner.isPresent()) {                       
+      14 -                return rowWinner;                              
+      19 +        for (int[][] line : WIN_LINES) {                       
+      20 +            Optional<Player> winner = getLineWinner(board, line
+         +);                                                             
+      21 +            if (winner.isPresent()) {                          
+      22 +                return winner;                                 
+      23              }
+      16 -                                                               
+      17 -            Player[] column = new Player[board.getSize()];     
+      18 -            for (int row = 0; row < board.getSize(); row++) {  
+      19 -                column[row] = board.getCell(row, i);           
+      20 -            }                                                  
+      21 -            Optional<Player> columnWinner = getSetWinner(column
+         -);                                                             
+      22 -            if (columnWinner.isPresent()) {                    
+      23 -                return columnWinner;                           
+      24 -            }                                                  
+      24          }
+      26 -                                                               
+      27 -        Player[] downDiagonal = new Player[board.getSize()];   
+      28 -        Player[] upDiagonal = new Player[board.getSize()];     
+      29 -        for (int i = 0; i < board.getSize(); i++) {            
+      30 -            downDiagonal[i] = board.getCell(i, i);             
+      31 -            upDiagonal[i] = board.getCell(i, board.getSize() - 
+         -1 - i);                                                        
+      32 -        }                                                      
+      33 -                                                               
+      34 -        Optional<Player> downDiagonalWinner = getSetWinner(down
+         -Diagonal);                                                     
+      35 -        if (downDiagonalWinner.isPresent()) {                  
+      36 -            return downDiagonalWinner;                         
+      37 -        }                                                      
+      38 -                                                               
+      39 -        Optional<Player> upDiagonalWinner = getSetWinner(upDiag
+         -onal);                                                         
+      40 -        if (upDiagonalWinner.isPresent()) {                    
+      41 -            return upDiagonalWinner;                           
+      42 -        }                                                      
+      43 -                                                               
+      44 -        Player[] fourCorners = {                               
+      45 -            board.getCell(0, 0),                               
+      46 -            board.getCell(0, board.getSize() - 1),             
+      47 -            board.getCell(board.getSize() - 1, 0),             
+      48 -            board.getCell(board.getSize() - 1, board.getSize() 
+         -- 1)};                                                         
+      49 -        Optional<Player> fourCornersWinner = getSetWinner(fourC
+         -orners);                                                       
+      50 -        if (fourCornersWinner.isPresent()) {                   
+      51 -            return fourCornersWinner;                          
+      52 -        }                                                      
+      53 -                                                               
+      54 -        for (int i = 0; i < board.getSize() - 1; i++) {        
+      55 -            for (int j = 0; j < board.getSize() - 1; j++) {    
+      56 -                Player[] box = {                               
+      57 -                    board.getCell(i, j),                       
+      58 -                    board.getCell(i, j + 1),                   
+      59 -                    board.getCell(i + 1, j),                   
+      60 -                    board.getCell(i + 1, j + 1)};              
+      61 -                Optional<Player> boxWinner = getSetWinner(box);
+      62 -                if (boxWinner.isPresent()) {                   
+      63 -                    return boxWinner;                          
+      64 -                }                                              
+      65 -            }                                                  
+      66 -        }                                                      
+      67 -                                                               
+      25          return Optional.empty();
+      26      }
+      27  
+     ...
+      40          return checkWinner(board).isPresent() || !anyMovesLeft(
+          board);
+      41      }
+      42  
+      86 -    private static Optional<Player> getSetWinner(Player[] set) 
+         -{                                                              
+      87 -        Player first = set[0];                                 
+      43 +    /** Returns the player who holds every cell in the line, if
+         + any. Stops at the first mismatch. */                          
+      44 +    private static Optional<Player> getLineWinner(Board board, 
+         +int[][] line) {                                                
+      45 +        Player first = board.getCell(line[0][0], line[0][1]);  
+      46          if (first == null) {
+      47              return Optional.empty();
+      48          }
+      91 -        for (Player p : set) {                                 
+      92 -            if (p != first) {                                  
+      49 +        for (int[] cell : line) {                              
+      50 +            if (board.getCell(cell[0], cell[1]) != first) {    
+      51                  return Optional.empty();
+      52              }
+      53          }
+      54          return Optional.of(first);
+      55      }
+      56 +                                                               
+      57 +    private static int[][][] buildWinLines(int size) {         
+      58 +        List<int[][]> lines = new ArrayList<>();               
+      59 +        int last = size - 1;                                   
+      60 +                                                               
+      61 +        // Rows and columns                                    
+      62 +        for (int i = 0; i < size; i++) {                       
+      63 +            int[][] row = new int[size][];                     
+      64 +            int[][] column = new int[size][];                  
+      65 +            for (int k = 0; k < size; k++) {                   
+      66 +                row[k] = new int[] {i, k};                     
+      67 +                column[k] = new int[] {k, i};                  
+      68 +            }                                                  
+      69 +            lines.add(row);                                    
+      70 +            lines.add(column);                                 
+      71 +        }                                                      
+      72 +                                                               
+      73 +        // Diagonals                                           
+      74 +        int[][] downDiagonal = new int[size][];                
+      75 +        int[][] upDiagonal = new int[size][];                  
+      76 +        for (int k = 0; k < size; k++) {                       
+      77 +            downDiagonal[k] = new int[] {k, k};                
+      78 +            upDiagonal[k] = new int[] {k, last - k};           
+      79 +        }                                                      
+      80 +        lines.add(downDiagonal);                               
+      81 +        lines.add(upDiagonal);                                 
+      82 +                                                               
+      83 +        // Four corners                                        
+      84 +        lines.add(new int[][] {{0, 0}, {0, last}, {last, 0}, {l
+         +ast, last}});                                                  
+      85 +                                                               
+      86 +        // 2x2 boxes                                           
+      87 +        for (int i = 0; i < last; i++) {                       
+      88 +            for (int j = 0; j < last; j++) {                   
+      89 +                lines.add(new int[][] {{i, j}, {i, j + 1}, {i +
+         + 1, j}, {i + 1, j + 1}});                                      
+      90 +            }                                                  
+      91 +        }                                                      
+      92 +                                                               
+      93 +        return lines.toArray(new int[0][][]);                  
+      94 +    }                                                          
+      95  }
+
+  Ran 1 shell command (ctrl+o to expand)
+  ⎿  Interrupted · What should Claude do instead?
+
+✻ Worked for 13s · done 12:27 PM
+
+❯ actually, can board size still be private but with a static accessor?         
+
+⏺ Making getSize() static is the fix, since Java bars a static and an instance
+  method with the same signature; existing calls like board.getSize() still
+  compile, though your IDE may warn. · summary
+
+⏺ Update(src/main/java/com/models/Board.java)
+  ⎿  Added 1 line, removed 1 line
+      1  package com.models;
+      2  
+      3  public class Board {
+      4 -    public static final int SIZE = 4;                           
+      4 +    private static final int SIZE = 4;                          
+      5  
+      6      private Player[][] cells;
+      7  
+
+⏺ Update(src/main/java/com/models/Board.java)
+  ⎿  Added 1 line, removed 1 line
+      35          return cells[row].clone();
+      36      }
+      37  
+      38 -    public int getSize() {                                     
+      38 +    public static int getSize() {                              
+      39          return SIZE;
+      40      }
+      41  }
+
+⏺ Update(src/main/java/com/TicTacToe.java)
+  ⎿  Added 1 line, removed 1 line
+      13       * Every winning line on the board, as a list of {row, col}
+           cells.
+      14       * Built once; checkWinner reads the board through these co
+          ordinates.
+      15       */
+      16 -    private static final int[][][] WIN_LINES = buildWinLines(Bo
+         -ard.SIZE);                                                     
+      16 +    private static final int[][][] WIN_LINES = buildWinLines(Bo
+         +ard.getSize());                                                
+      17  
+      18      public static Optional<Player> checkWinner(Board board) {
+      19          for (int[][] line : WIN_LINES) {
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ Yes: SIZE is private again, and getSize() is now static. checkWinner uses the
+  precomputed win lines, and all 33 tests pass.
+
+  Board
+  - SIZE stays private, and TicTacToe reads it through Board.getSize().
+  - getSize() had to become static itself, not get a separate static copy,
+    because Java doesn't allow two methods with the same name and no arguments.
+
+  TicTacToe
+  - WIN_LINES holds every winning line as a list of {row, col} cells. It's built
+    once when the class loads, from buildWinLines(Board.getSize()). That covers
+    rows, columns, both diagonals, the four corners and every 2×2 box.
+  - checkWinner is now one loop over WIN_LINES that returns the first line one
+    player fully holds.
+  - getLineWinner(board, line) replaces getSetWinner. It reads cells straight
+    from the board and stops at the first mismatch, so no arrays are built per
+    call.
+
+  Two leftover bits:
+  - anyMovesLeft still calls board.getSize() through an instance. It works, but
+    some IDEs warn about it; changing it to Board.getSize() would silence that.
+  - Nothing calls Board.getRow anymore. You can keep it as part of Board's API
+    or delete it.
+
+  Want me to tidy either of those?
+
+✻ Worked for 11s · done 12:28 PM
+
+❯ can WIN_LINES be a List of int[][]?                                           
+
+⏺ Yes. Wrapping it in List.copyOf also makes it read-only, which suits a
+  constant. The loop in checkWinner doesn't need to change.
+
+⏺ Update(src/main/java/com/TicTacToe.java)
+  ⎿  Added 1 line, removed 1 line
+       9  
+      10  public class TicTacToe {
+      11  
+      12 -    private static final int[][][] WIN_LINES = buildWinLines(Bo
+         -ard.getSize());                                                
+      12 +    private static final List<int[][]> WIN_LINES = buildWinLine
+         +s(Board.getSize());                                            
+      13  
+      14      public static Optional<Player> checkWinner(Board board) {
+      15          for (int[][] line : WIN_LINES) {
+
+⏺ Update(src/main/java/com/TicTacToe.java)
+  ⎿  Added 1 line, removed 1 line
+      49          return Optional.of(first);
+      50      }
+      51  
+      52 -    private static int[][][] buildWinLines(int size) {         
+      52 +    private static List<int[][]> buildWinLines(int size) {     
+      53          List<int[][]> lines = new ArrayList<>();
+      54          int last = size - 1;
+      55  
+
+⏺ Update(src/main/java/com/TicTacToe.java)
+  ⎿  Added 1 line, removed 1 line
+      81              }
+      82          }
+      83  
+      84 -        return lines.toArray(new int[0][][]);                  
+      84 +        return List.copyOf(lines);                             
+      85      }
+      86  }
+
+  Ran 1 shell command (ctrl+o to expand)
+⏺ WIN_LINES is now a List<int[][]>, and all 33 tests still pass.
+
+  - Type: the field and buildWinLines both use List<int[][]> instead of
+    int[][][].
+  - Return: buildWinLines ends with List.copyOf(lines) instead of toArray. That
+    makes the list read-only, so nothing can add or remove win lines after the
+    class loads.
+  - checkWinner: unchanged, because the for-each loop works the same on a list
+    as on an array.
+
+  The list itself is read-only, but the coordinate arrays inside it can still be
+  changed. That's fine because the field is private.
+
+✻ Churned for 7s · done 12:30 PM
