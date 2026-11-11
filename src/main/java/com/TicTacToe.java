@@ -14,32 +14,28 @@ public class TicTacToe {
                 return rowWinner;
             }
             
-            Player[] column = {
-                board.getCell(0, i),
-                board.getCell(1, i),
-                board.getCell(2, i),
-                board.getCell(3, i)};
+            Player[] column = new Player[board.getSize()];
+            for (int row = 0; row < board.getSize(); row++) {
+                column[row] = board.getCell(row, i);
+            }
             Optional<Player> columnWinner = getSetWinner(column);
             if (columnWinner.isPresent()) {
                 return columnWinner;
             }
         }
 
-        Player[] downDiagonal = {
-            board.getCell(0, 0),
-            board.getCell(1, 1),
-            board.getCell(2, 2),
-            board.getCell(3, 3)};
+        Player[] downDiagonal = new Player[board.getSize()];
+        Player[] upDiagonal = new Player[board.getSize()];
+        for (int i = 0; i < board.getSize(); i++) {
+            downDiagonal[i] = board.getCell(i, i);
+            upDiagonal[i] = board.getCell(i, board.getSize() - 1 - i);
+        }
+
         Optional<Player> downDiagonalWinner = getSetWinner(downDiagonal);
         if (downDiagonalWinner.isPresent()) {
             return downDiagonalWinner;
         }
 
-        Player[] upDiagonal = {
-            board.getCell(0, 3),
-            board.getCell(1, 2),
-            board.getCell(2, 1),
-            board.getCell(3, 0)};
         Optional<Player> upDiagonalWinner = getSetWinner(upDiagonal);
         if (upDiagonalWinner.isPresent()) {
             return upDiagonalWinner;
