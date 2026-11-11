@@ -3,7 +3,6 @@ package com;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.assertj.core.api.Assertions.assertThat;
 
 import com.models.Board;
 import com.models.Player;
@@ -138,7 +137,7 @@ class TicTacToeTest {
 
         @Test
         void emptyBoardHasMoves() {
-            assertThat(TicTacToe.anyMovesLeft(new Board())).isTrue();
+            assertTrue(TicTacToe.anyMovesLeft(new Board()));
         }
 
         @Test
@@ -148,12 +147,12 @@ class TicTacToeTest {
                 "OOXX",
                 "XXOO",
                 "OOX.");
-            assertThat(TicTacToe.anyMovesLeft(b)).isTrue();
+            assertTrue(TicTacToe.anyMovesLeft(b));
         }
 
         @Test
         void fullBoardHasNoMoves() {
-            assertThat(TicTacToe.anyMovesLeft(board(FULL_NO_WIN))).isFalse();
+            assertFalse(TicTacToe.anyMovesLeft(board(FULL_NO_WIN)));
         }
     }
 
